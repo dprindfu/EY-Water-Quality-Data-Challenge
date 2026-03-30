@@ -1,6 +1,6 @@
 # Predicting River Water Quality Across South Africa
 
-Geospatial ML pipeline for predicting three water quality indicators — Total Alkalinity (TA), Electrical Conductance (EC), and Dissolved Reactive Phosphorus (DRP) — at ungauged river monitoring stations using only publicly available satellite, climate, and terrain data.
+Geospatial ML pipeline for predicting three water quality indicators - Total Alkalinity (TA), Electrical Conductance (EC), and Dissolved Reactive Phosphorus (DRP) - at ungauged river monitoring stations using only publicly available satellite, climate, and terrain data.
 
 Built for the **2026 EY Open Science AI & Data Challenge**. Placed in the top 10% out of 300+ teams internationally. Leaderboard R² of 0.44 using zero in-situ water chemistry features.
 
@@ -16,17 +16,17 @@ The core difficulty is **spatial extrapolation**. All validation stations sit in
 
 The problem splits naturally into *where* a station is and *when* a sample was taken:
 
-**Spatial signal** — Features that don't change over time: elevation, distance to coast, catchment hydrology (Pitman model parameters, mean annual runoff), Human Development Index, and irrigation extent. These set the baseline chemistry at each location.
+**Spatial signal** -- Features that don't change over time: elevation, distance to coast, catchment hydrology (Pitman model parameters, mean annual runoff), Human Development Index, and irrigation extent. These set the baseline chemistry at each location.
 
-**Temporal signal** — Date-specific features: Landsat 8 surface reflectance bands and indices, TerraClimate monthly climate variables, and CHIRPS rainfall. These capture seasonal dilution and concentration dynamics.
+**Temporal signal** -- Date-specific features: Landsat 8 surface reflectance bands and indices, TerraClimate monthly climate variables, and CHIRPS rainfall. These capture seasonal dilution and concentration dynamics.
 
 Each target gets its own model because the three indicators respond to different physical drivers:
 
 - **TA → Gradient Boosting.** Alkalinity is geology-dominated. GB's sequential residual fitting extrapolates more smoothly than bagging methods when the validation geology differs from training.
 - **EC → Two-stage architecture.** Stage 1 learns the spatial baseline (typical EC at each station from geology and catchment features, trained on station means). Stage 2 learns the temporal residual (how EC deviates from the baseline on a given date, using climate and spectral features). This separation improved EC by ~0.02 over a single-stage ExtraTrees because it decouples the two fundamentally different signals.
-- **DRP → Random Forest (conservative depth).** Phosphorus signal is sparse and noisy. Deeper trees just memorized training stations. Soil chemistry features consistently hurt DRP in both CV and pseudo evaluation, confirming it's driven more by land use and rainfall than bedrock.
+- **DRP → Random Forest (conservative depth).** Phosphorus signal is sparse and noisy. Deeper trees just memorized training stations. Soil chemistry features consistently hurt DRP in both CV and leaderboard testing, confirming it's driven more by land use and rainfall than bedrock.
 
-A **monthly anomaly correction** adds the training set's average seasonal offset per month to each prediction. Simple, but worth ~0.016 on the leaderboard — alkalinity dips in summer from dilution, conductance peaks in winter from concentration.
+A **monthly anomaly correction** adds the training set's average seasonal offset per month to each prediction. Simple, but worth ~0.016 on the leaderboard -- alkalinity dips in summer from dilution, conductance peaks in winter from concentration.
 
 ## Feature Engineering
 
@@ -50,7 +50,7 @@ Datasets tested but excluded: ERA5 soil moisture (hurt leaderboard despite stron
 | **Leaderboard R²** | **0.44** |
 | Spatial CV (5-fold, stations held out) | 0.30 |
 
-The CV-to-leaderboard gap is expected — spatial CV deliberately holds out entire station clusters, making it more pessimistic than the leaderboard's specific geographic split.
+The CV-to-leaderboard gap is expected -- spatial CV deliberately holds out entire station clusters, making it more pessimistic than the leaderboard's specific geographic split.
 
 **What moved the needle** (cumulative leaderboard impact):
 - Pitman hydrological parameters: +0.04
@@ -59,10 +59,10 @@ The CV-to-leaderboard gap is expected — spatial CV deliberately holds out enti
 - Monthly anomaly correction: +0.016
 
 **What didn't work:**
-- KNN and spatial mixture-of-experts — too few training stations near the val region
-- Target transforms (log, Box-Cox, sqrt) — neutral or slightly negative
-- Regressor chains (EC→TA→DRP) — error propagation outweighed the cross-target signal
-- Feature removal / lean models — the model was underfitting, not overfitting
+- KNN and spatial mixture-of-experts -- too few training stations near the val region
+- Target transforms (log, Box-Cox, sqrt) -- neutral or slightly negative
+- Regressor chains (EC→TA→DRP) -- error propagation outweighed the cross-target signal
+- Feature removal / lean models -- the model was underfitting, not overfitting
 
 ## Repo Structure
 
@@ -70,7 +70,6 @@ The CV-to-leaderboard gap is expected — spatial CV deliberately holds out enti
 ├── pipeline.py                # Full training + prediction pipeline
 ├── feature_screening.py       # Framework for evaluating candidate features
 ├── submission_final.csv       # Actual competition submission (0.44 R²)
-├── data/                      # Input CSVs (not included — see Data Sources below)
 └── README.md
 ```
 
@@ -84,7 +83,7 @@ All features derived from publicly available datasets:
 - [SRTM / Copernicus DEM](https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model) — NASA / ESA
 - [WR2012](http://waterresourceswr2012.co.za/) — South Africa Water Resources 2012 study
 - [BasinATLAS](https://www.hydrosheds.org/hydroatlas) — WWF HydroSHEDS
-- [HWSD v2.0](https://www.fao.org/soils-portal/data-hub/soil-maps-and-databases/harmonized-world-soil-database-v20/en/) — FAO (tested, not used in final model)
+- [HWSD v2.0](https://www.fao.org/soils-portal/data-hub/soil-maps-and-databases/harmonized-world-soil-database-v20/en/) -- FAO (tested, not used in final model)
 
 Training labels provided by EY as part of the competition.
 
@@ -108,4 +107,4 @@ Python · scikit-learn · LightGBM · pandas · NumPy · GeoPandas · rasterio �
 
 ---
 
-*Daniel Rindfuss — 2026 EY Open Science AI & Data Challenge*
+*Daniel Rindfuss -- 2026 EY Open Science AI & Data Challenge*
